@@ -35,19 +35,18 @@ void setup() {
   // SEN0244
   gravityTds.setPin(TDSSensorPin);
   gravityTds.setAref(5.0);  //reference voltage on ADC, default 5.0V on Arduino UNO
-  gravityTds.setAdcRange(1024);  //1024 for 10bit ADC;4096 for 12bit ADC
-  gravityTds.begin();  //initialization
+  gravityTds.setAdcRange(1024);  //1024 for 10bit ADC; 4096 for 12bit ADC
+  gravityTds.begin();
 }
 
 void loop() {
-  
-
+  // Wait for message
   while(Serial.available()) {
     message = Serial.readString();
     messageReady = true;
   }
   if(messageReady) {
-    DynamicJsonDocument doc(512);
+    DynamicJsonDocument doc(128);
     DeserializationError error = deserializeJson(doc,message);
     if(error) {
       Serial.print(F("deserializeJson() failed: "));
@@ -57,7 +56,7 @@ void loop() {
     }
     if(doc["type"] == "request") {
       doc["type"] = "response";
-
+      
       // DS18B20
       sensors.requestTemperatures();
       float temperature = sensors.getTempCByIndex(0);
