@@ -46,10 +46,10 @@ void loop() {
     messageReady = true;
   }
   if(messageReady) {
-    DynamicJsonDocument doc(128);
+    DynamicJsonDocument doc(512);
     DeserializationError error = deserializeJson(doc,message);
     if(error) {
-      Serial.print(F("deserializeJson() failed: "));
+      Serial.print(F("Arduino: deserializeJson() failed: "));
       Serial.println(error.c_str());
       messageReady = false;
       return;
@@ -65,7 +65,7 @@ void loop() {
         temperatureTDS = temperature;
         
       // BH1750
-//      float lux = lightMeter.readLightLevel();
+      float lux = lightMeter.readLightLevel();
 
       // SEN0161
       float pH = 3.5*analogRead(pHSensorPin)*5.0/1024+Offset;
@@ -86,7 +86,7 @@ void loop() {
       float TDS = gravityTds.getTdsValue();
       
       doc["temp"] = temperature;
-//      doc["light"] = lux;
+      doc["light"] = lux;
       doc["ph"] = pH;
       doc["tss"] = NTU;
       doc["tds"] = TDS;

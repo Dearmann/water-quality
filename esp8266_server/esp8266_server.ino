@@ -28,7 +28,7 @@ void loop() {
 }
 
 void update_data() {
-  DynamicJsonDocument doc(128);
+  DynamicJsonDocument doc(512);
 
   // Sending request
   doc["type"] = "request";
@@ -45,7 +45,7 @@ void update_data() {
   }
   DeserializationError error = deserializeJson(doc,message);
   if(error) {
-    Serial.print(F("deserializeJson() failed: "));
+    Serial.print(F("ESP: deserializeJson() failed: "));
     Serial.println(error.c_str());
 //    return;
   }
@@ -66,7 +66,7 @@ void update_data() {
 }
 
 void handle_index() {
-  DynamicJsonDocument doc(128);
+  DynamicJsonDocument doc(512);
 
   // Sending request
   doc["type"] = "request";
@@ -83,7 +83,7 @@ void handle_index() {
   }
   DeserializationError error = deserializeJson(doc,message);
   if(error) {
-    Serial.print(F("deserializeJson() failed: "));
+    Serial.print(F("ESP: deserializeJson() failed: "));
     Serial.println(error.c_str());
 //    return;
   }
