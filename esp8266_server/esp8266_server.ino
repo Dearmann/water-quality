@@ -10,7 +10,7 @@ float temp = 0, light = 0, ph = 0, tss = 0, tds = 0;
 
 void setup() {
   Serial.begin(115200);
-  Serial.setTimeout(1500);
+  Serial.setTimeout(100);
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
       delay(500);
