@@ -21,7 +21,7 @@ String message = "";
 bool messageReady = false;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   
   // BH1750
   // Initialize the I2C bus (BH1750 library doesn't do this automatically)
@@ -34,8 +34,8 @@ void setup() {
 
   // SEN0244
   gravityTds.setPin(TDSSensorPin);
-  gravityTds.setAref(5.0);  //reference voltage on ADC, default 5.0V on Arduino UNO
-  gravityTds.setAdcRange(1024);  //1024 for 10bit ADC; 4096 for 12bit ADC
+  gravityTds.setAref(5.0); // Reference voltage on ADC, default 5.0V on Arduino UNO
+  gravityTds.setAdcRange(1024); // 1024 for 10bit ADC; 4096 for 12bit ADC
   gravityTds.begin();
 }
 
@@ -46,7 +46,7 @@ void loop() {
     messageReady = true;
   }
   if(messageReady) {
-    DynamicJsonDocument doc(512);
+    StaticJsonDocument<512> doc;
     DeserializationError error = deserializeJson(doc,message);
     if(error) {
       Serial.print(F("Arduino: deserializeJson() failed: "));
@@ -63,12 +63,6 @@ void loop() {
       float temperatureTDS = 15;
       if (temperature > 0)
         temperatureTDS = temperature;
-        
-      // BH1750
-      float lux = lightMeter.readLightLevel();
-
-      // SEN0161
-      float pH = 3.5*analogRead(pHSensorPin)*5.0/1024+Offset;
 
       // SEN0189
       float tssVoltage = analogRead(TSSSensorPin) * (5.0 / 1024.0); // Convert the analog reading (which goes from 0 - 1023) to a voltage (0 - 5V):
@@ -81,15 +75,14 @@ void loop() {
         NTU = -1120.4 * tssVoltage * tssVoltage + 5742.3 * tssVoltage - 4352.9;
 
       // SEN0244
-      gravityTds.setTemperature(temperatureTDS);  // set the temperature and execute temperature compensation
-      gravityTds.update();  //sample and calculate 
-      float TDS = gravityTds.getTdsValue();
+      gravityTds.setTemperature(temperatureTDS); // Set the temperature and execute temperature compensation
+      gravityTds.update();
       
       doc["temp"] = temperature;
-      doc["light"] = lux;
-      doc["ph"] = pH;
+      doc["light"] = lightMeter.readLightLevel(); // BH1750
+      doc["ph"] = 3.5*analogRead(pHSensorPin)*5.0/1024+Offset; // SEN0161
       doc["tss"] = NTU;
-      doc["tds"] = TDS;
+      doc["tds"] = gravityTds.getTdsValue();
       serializeJson(doc,Serial);
     }
     messageReady = false;

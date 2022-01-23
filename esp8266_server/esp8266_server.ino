@@ -9,7 +9,8 @@ const char* password =  "password";
 float temp = 0, light = 0, ph = 0, tss = 0, tds = 0;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
+  Serial.setTimeout(1500);
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
       delay(500);
@@ -28,7 +29,7 @@ void loop() {
 }
 
 void update_data() {
-  DynamicJsonDocument doc(512);
+  StaticJsonDocument<512> doc;
 
   // Sending request
   doc["type"] = "request";
@@ -47,7 +48,7 @@ void update_data() {
   if(error) {
     Serial.print(F("ESP: deserializeJson() failed: "));
     Serial.println(error.c_str());
-//    return;
+    return;
   }
   
   // Prepare HTTP response
@@ -66,7 +67,7 @@ void update_data() {
 }
 
 void handle_index() {
-  DynamicJsonDocument doc(512);
+  StaticJsonDocument<512> doc;
 
   // Sending request
   doc["type"] = "request";
@@ -85,7 +86,6 @@ void handle_index() {
   if(error) {
     Serial.print(F("ESP: deserializeJson() failed: "));
     Serial.println(error.c_str());
-//    return;
   }
 
   // Prepare HTTP response
